@@ -1,2 +1,3 @@
-def main() -> None:
-    print("Hello from df-augment!")
+from df_augment.cli import main
+
+__all__ = ["main"]
