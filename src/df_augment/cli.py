@@ -1,4 +1,5 @@
 """Command-line interface for df-augment."""
+
 from __future__ import annotations
 
 from pathlib import Path
