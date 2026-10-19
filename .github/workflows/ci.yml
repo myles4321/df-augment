@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --locked --all-groups
+
+      - name: Lint (ruff)
+        run: uv run ruff check src/
+
+      - name: Format check (ruff)
+        run: uv run ruff format --check src/
+
+      - name: Type check (mypy)
+        run: uv run mypy src/ --ignore-missing-imports
+
+      - name: Tests
+        run: uv run pytest --cov=src/df_augment --cov-report=term-missing

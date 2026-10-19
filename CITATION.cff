@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "df-augment"
+abstract: >
+  A standalone Python package that turns one parquet dataset into a
+  larger, augmented parquet dataset. Every synthetic row records which
+  original sample(s) it came from via the aug_source_group column,
+  preventing augmented data from leaking into test sets when used with
+  df-analyze or DeepTune.
+authors:
+  - family-names: "Levman"
+    given-names: "Jacob"
+    affiliation: "St. Francis Xavier University"
+repository-code: "https://github.com/myles4321/df-augment"
+license: TBD
+version: 0.1.0
+date-released: 2026-10-13
