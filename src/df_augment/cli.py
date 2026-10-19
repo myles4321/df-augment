@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -39,7 +38,7 @@ def augment(
         "-t",
         help="Augmentation technique(s) to apply, e.g. --techniques gauss jitter.",
     ),
-    multiplier: Optional[float] = typer.Option(
+    multiplier: float | None = typer.Option(
         None,
         "--multiplier",
         "-m",
@@ -57,7 +56,7 @@ def augment(
         "-y",
         help="Name of the target column.",
     ),
-    group_col: Optional[str] = typer.Option(
+    group_col: str | None = typer.Option(
         None,
         "--group-col",
         help="Column to use as the source group (e.g. patient_id). "

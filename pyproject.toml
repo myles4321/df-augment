@@ -28,6 +28,10 @@ df-augment = "df_augment:main"
 requires = ["uv_build>=0.11.28,<0.12.0"]
 build-backend = "uv_build"
 
+[tool.ruff.lint]
+# B008: typer.Option/Argument in defaults is the standard Typer pattern — not a bug
+ignore = ["B008"]
+
 [dependency-groups]
 dev = [
     "hypothesis>=6.169.0",
