@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 import typer
@@ -70,15 +71,48 @@ def augment(
     ),
 ) -> None:
     """Augment a dataset and write a lineage-tracked parquet file."""
-    typer.echo(f"df-augment — input: {data}")
-    typer.echo(f"  techniques : {', '.join(techniques)}")
-    typer.echo(f"  multiplier : {multiplier}")
-    typer.echo(f"  balance    : {balance}")
-    typer.echo(f"  target     : {target}")
-    typer.echo(f"  group_col  : {group_col}")
-    typer.echo(f"  seed       : {seed}")
-    typer.echo(f"  output     : {out}")
-    typer.echo("(Not yet implemented — Phase 1a)")
+    from pydantic import ValidationError
+
+    import df_augment
+    from df_augment.config import AugmentConfig
+    from df_augment.io import loader, writer
+
+    # Build and validate config.
+    try:
+        config = AugmentConfig(
+            data=data,
+            out=out,
+            techniques=techniques,
+            multiplier=multiplier,
+            balance=balance,
+            target=target,
+            group_col=group_col,
+            seed=seed,
+        )
+    except (ValidationError, ValueError) as exc:
+        typer.echo(f"Configuration error: {exc}", err=True)
+        raise typer.Exit(1)
+
+    # Load input.
+    try:
+        df = loader.load(config.data, config.group_col)
+    except ValueError as exc:
+        typer.echo(f"Load error: {exc}", err=True)
+        raise typer.Exit(1)
+
+    n_orig = len(df)
+
+    # SHA-256 of the input file.
+    sha256 = hashlib.sha256(config.data.read_bytes()).hexdigest()
+
+    # Augment.
+    result = df_augment.augment(df, config)
+
+    # Write output.
+    writer.write(result, config.out, sha256, config.model_dump())
+
+    n_total = len(result)
+    typer.echo(f"+ {n_orig} -> {n_total} rows written to {config.out}")
 
 
 def main() -> None:
